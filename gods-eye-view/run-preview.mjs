@@ -1,37 +1,31 @@
-import { preview } from 'vite';
-import { createBrowserViteConfig } from './build/vite.js';
+import { createServer } from 'vite';
 import { localProviderPlugins } from './server/providers/local.js';
 import { apiNotFoundPlugin } from './server/standalone/api-not-found.js';
 
-// Build-time config is intentionally loaded explicitly here instead of relying
-// on Vite's config-file discovery. This mirrors upstream's preview-serving test
-// and guarantees that the server-side provider middleware is attached to the
-// production PreviewServer as well as the browser build.
-const plugins = [...localProviderPlugins(), apiNotFoundPlugin()];
-
-const config = {
-    ...createBrowserViteConfig({
-        plugins,
-        googleApiKey: process.env.GOOGLE_MAPS_API_KEY,
-        cesiumToken: process.env.CESIUM_ION_TOKEN,
-        host: '127.0.0.1',
-        port: 4173,
-    }),
-    root: '/app',
+// Serve the already-built production assets with Vite's normal server.
+// The upstream providers attach through configureServer(), so this avoids
+// relying on PreviewServer to install the API middleware.
+const server = await createServer({
+    root: '/app/dist',
     configFile: false,
     envFile: false,
-    preview: {
+    publicDir: false,
+    appType: 'spa',
+    logLevel: 'info',
+    plugins: [...localProviderPlugins(), apiNotFoundPlugin()],
+    server: {
         host: '127.0.0.1',
         port: 4173,
         strictPort: true,
+        hmr: false,
     },
-};
+});
 
-const server = await preview(config);
+await server.listen();
 server.printUrls();
 
 const shutdown = async () => {
-    await server.httpServer.close();
+    await server.close();
     process.exit(0);
 };
 
