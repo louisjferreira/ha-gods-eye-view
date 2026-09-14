@@ -1,6 +1,7 @@
+import { fileURLToPath } from 'node:url';
 import { loadConfigFromFile, mergeConfig, preview } from 'vite';
 
-const configPath = new URL('./vite.config.js', import.meta.url);
+const configPath = fileURLToPath(new URL('./vite.config.js', import.meta.url));
 const loaded = await loadConfigFromFile(
   { command: 'serve', mode: 'production' },
   configPath,
