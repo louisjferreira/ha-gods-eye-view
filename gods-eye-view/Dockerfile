@@ -19,6 +19,7 @@ RUN tar -xzf /tmp/gods-eye-view.tar.gz --strip-components=1 -C /app \
     && find . -type f -name '*.html' -exec sed -i 's#href="/#href="./#g; s#src="/#src="./#g; s#data-logo-src="/#data-logo-src="./#g' {} + \
     && find src -type f -name '*.js' -exec sed -i "s#'/api/#'./api/#g; s#\"/api/#\"./api/#g" {} + \
     && npm ci \
+    && npm install --no-save sirv \
     && npm run build
 
 COPY run-preview.mjs /app/run-preview.mjs
