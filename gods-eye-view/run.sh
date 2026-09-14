@@ -3,9 +3,9 @@ set -euo pipefail
 
 cd /app
 
-# God's Eye View uses Vite's standalone server. Keep the application bound to
-# loopback and expose it only through the Home Assistant Ingress proxy.
-npm run dev -- --host 127.0.0.1 --port 4173 &
+# Serve the production Vite build. The preview server still loads God's Eye
+# View's provider plugins, but avoids Vite's development module/HMR URLs.
+npm run preview -- --host 127.0.0.1 --port 4173 --strictPort &
 APP_PID=$!
 
 cleanup() {
@@ -13,11 +13,10 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# Give Vite time to initialise before starting the Ingress proxy.
+# Give Vite preview time to initialise before starting the Ingress proxy.
 sleep 2
 
-# Fail loudly if the proxy cannot start. Previously nginx was started in the
-# background without its errors being visible in the Home Assistant log.
+# Fail loudly if the proxy cannot start.
 nginx -t
 
 # Keep nginx in the foreground so its status/errors are visible to the
