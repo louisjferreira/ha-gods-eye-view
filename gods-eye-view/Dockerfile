@@ -21,6 +21,7 @@ RUN tar -xzf /tmp/gods-eye-view.tar.gz --strip-components=1 -C /app \
     && npm ci \
     && npm run build
 
+COPY run-preview.mjs /app/run-preview.mjs
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
