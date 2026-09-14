@@ -1,26 +1,10 @@
 import { createServer } from 'vite';
-import sirv from 'sirv';
 import { localProviderPlugins } from './server/providers/local.js';
 import { apiNotFoundPlugin } from './server/standalone/api-not-found.js';
 
-// Use Vite's normal development server so configureServer() installs all
-// upstream provider middleware. Serve the already-built production bundle
-// from /app/dist before Vite's own source-file middleware.
-const staticDist = sirv('/app/dist', {
-    dev: false,
-    single: true,
-});
-
-const distPlugin = {
-    name: 'gev-production-dist',
-    configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-            if (req.url?.startsWith('/api/')) return next();
-            staticDist(req, res, next);
-        });
-    },
-};
-
+// Run Vite only as the API/provider server. Nginx serves the already-built
+// production assets directly from /app/dist. This keeps the browser on the
+// production bundle while configureServer() installs all provider middleware.
 const server = await createServer({
     root: '/app',
     configFile: false,
@@ -28,11 +12,7 @@ const server = await createServer({
     publicDir: false,
     appType: 'custom',
     logLevel: 'info',
-    plugins: [
-        distPlugin,
-        ...localProviderPlugins(),
-        apiNotFoundPlugin(),
-    ],
+    plugins: [...localProviderPlugins(), apiNotFoundPlugin()],
     server: {
         host: '127.0.0.1',
         port: 4173,
