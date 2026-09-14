@@ -1,0 +1,26 @@
+name: God's Eye View
+version: 0.1.0
+slug: gods_eye_view
+description: >-
+  Run Bilawal Sidhu's God's Eye View intelligence globe inside Home Assistant.
+  Provides a live 3D Earth with aircraft, ships, satellites, earthquakes,
+  cameras and other geospatial layers.
+url: https://github.com/bilawalsidhu/gods-eye-view
+arch:
+  - aarch64
+  - amd64
+ingress: true
+ingress_port: 8099
+ingress_entry: /
+ingress_stream: true
+auth_api: false
+panel_icon: mdi:earth
+panel_title: God's Eye View
+startup: application
+boot: auto
+init: false
+stage: experimental
+timeout: 120
+ports: {}
+options: {}
+schema: {}
