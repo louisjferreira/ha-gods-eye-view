@@ -3,9 +3,10 @@ set -euo pipefail
 
 cd /app
 
-# Serve the production Vite build. The preview server still loads God's Eye
-# View's provider plugins, but avoids Vite's development module/HMR URLs.
-npm run preview -- --host 127.0.0.1 --port 4173 --strictPort &
+# Serve the production build through Vite's programmatic PreviewServer.
+# Loading the standalone config explicitly guarantees that all upstream
+# configurePreviewServer provider middleware is installed.
+node /app/run-preview.mjs &
 APP_PID=$!
 
 cleanup() {
@@ -13,7 +14,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# Give Vite preview time to initialise before starting the Ingress proxy.
+# Give the preview server time to initialise before starting the Ingress proxy.
 sleep 2
 
 # Fail loudly if the proxy cannot start.
