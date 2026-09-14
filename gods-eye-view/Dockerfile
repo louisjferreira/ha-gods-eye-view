@@ -18,7 +18,8 @@ RUN tar -xzf /tmp/gods-eye-view.tar.gz --strip-components=1 -C /app \
     && sed -i "/server: {/i\\      base: './'," build/vite.js \
     && find . -type f -name '*.html' -exec sed -i 's#href="/#href="./#g; s#src="/#src="./#g; s#data-logo-src="/#data-logo-src="./#g' {} + \
     && find src -type f -name '*.js' -exec sed -i "s#'/api/#'./api/#g; s#\"/api/#\"./api/#g" {} + \
-    && npm ci
+    && npm ci \
+    && npm run build
 
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY run.sh /run.sh
